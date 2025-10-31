@@ -1,0 +1,47 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int       @id @default(autoincrement())
+  name             String
+  email            String    @unique
+  password         String    @map("password_hash")
+  createdAt        DateTime  @default(now())
+  sentMessages     Message[] @relation("Sender")
+  receivedMessages Message[] @relation("Receiver")
+}
+
+model Message {
+  id              Int      @id @default(autoincrement())
+  senderId        Int      @map("sender_id")
+  receiverId      Int      @map("receiver_id")
+  text            String
+  timestamp       DateTime @default(now())
+  conversationKey String   @map("conversation_key")
+
+  sender   User     @relation("Sender", fields: [senderId], references: [id])
+  receiver User     @relation("Receiver", fields: [receiverId], references: [id])
+  insight  Insight? @relation("MessageInsight")
+
+  @@index([senderId, receiverId])
+  @@index([conversationKey])
+}
+
+model Insight {
+  id              Int     @id @default(autoincrement())
+  conversationKey String  @unique @map("conversation_key")
+  summary         String
+  sentiment       String
+  messageId       Int     @unique @map("message_id") // Foreign key to the Message table
+  message         Message @relation("MessageInsight", fields: [messageId], references: [id])
+
+  @@index([conversationKey])
+}
