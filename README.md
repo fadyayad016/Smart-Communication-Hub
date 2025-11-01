@@ -4,9 +4,9 @@ This repository contains the complete full-stack application for the "Smart Comm
 
  Project Structure
 
-/frontend: The Next.js (React + TypeScript) client application.
+/frontend: The Next.js
 
-/backend: The NestJS (Node.js + Express) server application.
+/backend: The NestJS 
 
  Quick Start
 
