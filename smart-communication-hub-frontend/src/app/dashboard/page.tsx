@@ -40,7 +40,6 @@ export default function DashboardPage() {
           <span className="text-gray-700 hidden sm:block font-medium">
             {user.name}
           </span>
-          {/* --- ENHANCEMENT: Added user avatar --- */}
           <div className="w-8 h-8 rounded-full bg-indigo-500 text-white flex items-center justify-center text-sm font-semibold">
             {user.name.charAt(0).toUpperCase()}
           </div>
@@ -49,7 +48,6 @@ export default function DashboardPage() {
             className="p-2 text-gray-500 rounded-full hover:bg-gray-100 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
             aria-label="Logout"
           >
-            {/* --- ENHANCEMENT: Replaced text button with an icon --- */}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5"
@@ -68,9 +66,7 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {/* --- ENHANCEMENT: Main content area uses flex-1 to fill space --- */}
       <div className="flex flex-1 overflow-hidden">
-        {/* --- ENHANCEMENT: Defined fixed, responsive widths for sidebar --- */}
         <div
           className={`
             w-full md:w-80 lg:w-96 flex-shrink-0 
@@ -99,7 +95,6 @@ export default function DashboardPage() {
               onBack={() => setSelectedConversation(null)}
             />
           ) : (
-            // --- ENHANCEMENT: Professional placeholder for empty chat window ---
             <div className="flex-1 items-center justify-center text-gray-500 hidden md:flex">
               <div className="text-center">
                 <svg
@@ -127,7 +122,6 @@ export default function DashboardPage() {
           )}
         </main>
 
-        {/* --- ENHANCEMENT: Defined fixed width for insights, hidden below 'lg' --- */}
         <div className="w-80 flex-shrink-0 bg-white border-l border-gray-200 hidden lg:flex flex-col overflow-y-auto p-4">
           {selectedConversation ? (
             <InsightsPanel
@@ -135,7 +129,6 @@ export default function DashboardPage() {
               targetUserId={selectedConversation.id}
             />
           ) : (
-            // --- ENHANCEMENT: Placeholder for empty insights panel ---
             <div className="flex-1 flex items-center justify-center text-center text-gray-500">
               <div>
                 <svg

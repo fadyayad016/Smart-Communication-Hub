@@ -41,26 +41,21 @@ export default function ChatWindow({
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
 
-  // --- NEW STATE FOR SEARCH ---
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Message[] | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
-  // --- END NEW STATE ---
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const targetUserId = conversation.id;
 
-  // --- UPDATED: Fetch initial conversation history ---
   useEffect(() => {
     const fetchHistory = async () => {
       try {
         const response = await axios.get(
           `${API_URL}/api/messages/conversation`,
           {
-            // Use params for cleaner URL
             params: { targetUserId },
-            // Assuming auth (token/cookie) is handled by a global interceptor
           },
         );
         setMessages(response.data);
@@ -83,7 +78,6 @@ export default function ChatWindow({
           message.receiverId === currentUserId);
 
       if (relevant) {
-        // Only update the main message list, not search results
         setMessages((prev) => [...prev, message]);
       }
     };
@@ -97,22 +91,20 @@ export default function ChatWindow({
     };
   }, [currentUserId, targetUserId]);
 
-  // --- NEW: Debounce effect for search query ---
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedQuery(searchQuery);
-    }, 500); // 500ms debounce timer
+    }, 500);
 
     return () => {
       clearTimeout(handler);
     };
   }, [searchQuery]);
 
-  // --- NEW: Effect to call search API when debounced query changes ---
   useEffect(() => {
     const performSearch = async () => {
       if (!debouncedQuery) {
-        setSearchResults(null); // Clear search results if query is empty
+        setSearchResults(null); 
         setIsSearching(false);
         return;
       }
@@ -120,19 +112,18 @@ export default function ChatWindow({
       setIsSearching(true);
       try {
         const response = await axios.get(
-          `${API_URL}/api/messages/search`, // Your new endpoint
+          `${API_URL}/api/messages/search`, 
           {
             params: {
               targetUserId: targetUserId,
               q: debouncedQuery,
             },
-            // Assuming auth is handled globally
           },
         );
         setSearchResults(response.data);
       } catch (error) {
         console.error('Failed to search messages:', error);
-        setSearchResults([]); // Set to empty array on error to show "No results"
+        setSearchResults([]); 
       }
       setIsSearching(false);
     };
@@ -140,7 +131,6 @@ export default function ChatWindow({
     performSearch();
   }, [debouncedQuery, targetUserId]);
 
-  // Scroll to bottom when main messages change (but not for search)
   useEffect(() => {
     if (searchResults === null) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -161,32 +151,15 @@ export default function ChatWindow({
 
     socket.emit('send_message', messagePayload);
 
-    // Optimistic UI update (if search is not active)
-    // The socket listener will also add this, but this feels faster
-    // Note: This part is optional if your socket 'new_message' is reliable
-    // if (searchResults === null) {
-    //   const optimisticMessage: Message = {
-    //     id: Date.now(), // Temporary ID
-    //     senderId: currentUserId,
-    //     receiverId: targetUserId,
-    //     text: inputText.trim(),
-    //     timestamp: new Date().toISOString(),
-    //     sender: { id: currentUserId, name: 'You' }, // Placeholder
-    //   };
-    //   setMessages((prev) => [...prev, optimisticMessage]);
-    // }
 
     setInputText('');
   };
 
-  // --- NEW: Determine which message list to display ---
   const messagesToDisplay = searchResults !== null ? searchResults : messages;
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
-      {/* --- UPDATED HEADER with Search Bar --- */}
       <div className="p-4 bg-white border-b border-gray-200 flex flex-col gap-4 sticky top-0 z-10">
-        {/* Top row: Back, Avatar, Name */}
         <div className="flex items-center space-x-4">
           <button
             onClick={onBack}
@@ -218,7 +191,6 @@ export default function ChatWindow({
           </h2>
         </div>
 
-        {/* Bottom row: Search Bar */}
         <div className="relative w-full">
           <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 z-10">
             <SearchIcon />
@@ -241,9 +213,7 @@ export default function ChatWindow({
           )}
         </div>
       </div>
-      {/* --- END UPDATED HEADER --- */}
 
-      {/* --- UPDATED MESSAGE LIST --- */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {isSearching && (
           <div className="text-center text-gray-500 py-4">Searching...</div>
@@ -291,7 +261,6 @@ export default function ChatWindow({
         ))}
         <div ref={messagesEndRef} />
       </div>
-      {/* --- END UPDATED MESSAGE LIST --- */}
 
       <form
         onSubmit={handleSend}
@@ -329,7 +298,6 @@ export default function ChatWindow({
   );
 }
 
-// --- NEW: Inline SVG Icons ---
 const SearchIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
